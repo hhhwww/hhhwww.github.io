@@ -4,6 +4,13 @@
   
     
     <entry>
+      <title><![CDATA[testingCategories]]></title>
+      <url>http://yoursite.com/2016/08/08/testingCategories/</url>
+      <content type="html"><![CDATA[<p>This is a testing!</p>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[Test]]></title>
       <url>http://yoursite.com/2016/08/08/Test/</url>
       <content type="html"><![CDATA[<ul>
