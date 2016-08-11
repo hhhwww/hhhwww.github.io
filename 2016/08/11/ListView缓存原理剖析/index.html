@@ -84,15 +84,33 @@
 
 
 
-<meta name="description" content="不忘初心">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Show Your Code">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="[TOC]
+##单类型View缓存机制
+
+请看上图，字母前面的数字表示元素在屏幕上的position,字母代表着View的类型，例如1A就表示第一个位置并且类型为A的View
+当从状态一转变为状态2后，1A被滑出，5A被滑入，由于5A在被滑入之前缓存池中没有元素，所以5A将被创建，并且当1A滑出屏幕时将被投入到缓存池中，缓存池是一个ArrayList的数组private ArrayList&amp;lt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ListView缓存原理剖析">
+<meta property="og:url" content="http://yoursite.com/2016/08/11/ListView缓存原理剖析/index.html">
 <meta property="og:site_name" content="Show Your Code">
-<meta property="og:description" content="不忘初心">
+<meta property="og:description" content="[TOC]
+##单类型View缓存机制
+
+请看上图，字母前面的数字表示元素在屏幕上的position,字母代表着View的类型，例如1A就表示第一个位置并且类型为A的View
+当从状态一转变为状态2后，1A被滑出，5A被滑入，由于5A在被滑入之前缓存池中没有元素，所以5A将被创建，并且当1A滑出屏幕时将被投入到缓存池中，缓存池是一个ArrayList的数组private ArrayList&amp;lt;">
+<meta property="og:image" content="http://img.blog.csdn.net/20160810223705616">
+<meta property="og:image" content="http://img.blog.csdn.net/20160810222700844">
+<meta property="og:image" content="http://img.blog.csdn.net/20160810222953784">
+<meta property="og:image" content="http://img.blog.csdn.net/20160810225143106">
+<meta property="og:updated_time" content="2016-08-11T03:40:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Show Your Code">
-<meta name="twitter:description" content="不忘初心">
+<meta name="twitter:title" content="ListView缓存原理剖析">
+<meta name="twitter:description" content="[TOC]
+##单类型View缓存机制
+
+请看上图，字母前面的数字表示元素在屏幕上的position,字母代表着View的类型，例如1A就表示第一个位置并且类型为A的View
+当从状态一转变为状态2后，1A被滑出，5A被滑入，由于5A在被滑入之前缓存池中没有元素，所以5A将被创建，并且当1A滑出屏幕时将被投入到缓存池中，缓存池是一个ArrayList的数组private ArrayList&amp;lt;">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160810223705616">
 
 
 
@@ -113,9 +131,9 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/08/11/ListView缓存原理剖析/"/>
 
-  <title> Show Your Code </title>
+  <title> ListView缓存原理剖析 | Show Your Code </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -136,9 +154,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -248,9 +264,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -270,10 +286,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/08/11/ListView缓存原理剖析/" itemprop="url">
-                  ListView缓存原理剖析
-                </a>
+                ListView缓存原理剖析
               
             
           </h1>
@@ -320,9 +333,7 @@
       
 
       
-        
-          
-            <p>[TOC]</p>
+        <p>[TOC]</p>
 <p>##单类型View缓存机制<br><img src="http://img.blog.csdn.net/20160810223705616" alt="这里写图片描述"></p>
 <ul>
 <li>请看上图，字母前面的数字表示元素在屏幕上的position,字母代表着View的类型，例如<code>1A</code>就表示第一个位置并且类型为A的View</li>
@@ -371,16 +382,20 @@
 <li>当同个类型的View的多个实例(数量大于某个值)在缓存池中存在过长时间时(时间大于某个值)，可以利用缓存过期原理，逐步remove掉arraylist中的数据，并动态的设置变换缓存时间，达到高效利用(比如当arraylist[0]中存在11个缓存的View时，并且时间已经过了第一次过期时间5min,那么将remove掉第11个元素，如果又过4分钟此arraylist[0]还没有元素被使用，remove掉第10个元素，依次类推，直到最后一分钟还未使用，直接removeAll)</li>
 </ul>
 
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
@@ -388,351 +403,32 @@
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/08/08/testingCategories/" rel="next" title="testingCategories">
+                <i class="fa fa-chevron-left"></i> testingCategories
+              </a>
             
-              
-                
-                <a class="post-title-link" href="/2016/08/08/testingCategories/" itemprop="url">
-                  testingCategories
-                </a>
-              
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-08T16:35:10+08:00" content="2016-08-08">
-              2016-08-08
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/TestingCategories/" itemprop="url" rel="index">
-                    <span itemprop="name">TestingCategories</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/08/testingCategories/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/08/testingCategories/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>This is a testing!</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-      
 
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/08/Test/" itemprop="url">
-                  Test
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-08T10:04:53+08:00" content="2016-08-08">
-              2016-08-08
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/08/Test/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/08/Test/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>I just want to test</li>
-</ul>
-
-          
-        
+    <div class="post-spread">
       
     </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/08/hello-world/" itemprop="url">
-                  Hello World
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-08T00:08:47+08:00" content="2016-08-08">
-              2016-08-08
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/08/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/08/hello-world/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
@@ -740,6 +436,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/11/ListView缓存原理剖析/"
+           data-title="ListView缓存原理剖析" data-url="http://yoursite.com/2016/08/11/ListView缓存原理剖析/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -759,8 +463,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/geekerhw.png"
@@ -810,6 +523,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -913,6 +637,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
