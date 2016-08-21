@@ -271,6 +271,140 @@
             
               
                 
+                <a class="post-title-link" href="/2016/08/22/非UI线程更新UI/" itemprop="url">
+                  非UI线程更新UI
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-22T01:13:02+08:00" content="2016-08-22">
+              2016-08-22
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/22/非UI线程更新UI/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/22/非UI线程更新UI/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>今天晚上被弟弟告知他在子线程中更新了UI,问我是不是版本的问题,我果断说是他的代码写错了,不过分分钟被打脸,经过我一番仔细的探查最终发现了原因,或许这件事的结果不是多么的重要,但是我认为探查的过程还是有一定的参考价值的.</p>
+</blockquote>
+<ul>
+<li><p>首先,遇见这种问题时下意识的是去google,所以我采取了下面的措施(请忽视我不堪入目的英语,相信google的强大….)<br><img src="http://img.blog.csdn.net/20160822002052174" alt="这里写图片描述"></p>
+</li>
+<li><p>然而我发现我并没有得到我想要的结果,大部分的答案是告诉我如何在子线程中转到主线程中更新UI,好吧,难道是我不应该用?号,所以,我做了下面的事.<br><img src="http://img.blog.csdn.net/20160822002356975" alt="这里写图片描述"></p>
+</li>
+<li>可悲的是google觉得我表达的是一个意思…(可能是我英语太差了,请不要告诉我这个事实),没办法了,只能自己上阵了,感谢google搜索不到,才让自己有了这次探索的经历!</li>
+</ul>
+<hr>
+<ul>
+<li><p>首先,我们先看一下代码,代码的意思很简单,出乎意料的时,它正确运行了,并且在手机界面上显示的是Changed,这打破了我们在非主线程中不能更新UI的认识</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line"></div><div class="line">        <span class="keyword">final</span> TextView tv = (TextView) findViewById(R.id.tv_test);</div><div class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                tv.setText(<span class="string">"Changed"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>之后我就意识到,这个问题可能跟之前我碰到的一个在onCreate中直接获取View的宽高无法得到正确的值一样,受某些东西延迟加载的因素,为了验证我的想法,我又运行了下面的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line"></div><div class="line">        <span class="keyword">final</span> TextView tv = (TextView) findViewById(R.id.tv_test);</div><div class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    Thread.sleep(<span class="number">3000</span>);</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">                tv.setText(<span class="string">"Changed"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>正确的错误</code>终于出现了,请看一下令人高兴的久违的错误<br><img src="http://img.blog.csdn.net/20160822004500714" alt="这里写图片描述"></p>
+</li>
+<li><p>然后我们就探查<code>tv.setText(&quot;Changed&quot;);</code>内部做了什么,不断的跟进内部方法,我们会走到这个方法中,我们会注意到,最终都会调用invalidate()方法重新绘制,这也是非常符合自然逻辑的,所以我们就去探索invalidate()中做了什么</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">     * Check whether entirely new text requires a new view layout</div><div class="line">     * or merely a new text layout.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkForRelayout</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// If we have a fixed width, we can just swap in a new text layout</span></div><div class="line">        <span class="comment">// if the text height stays the same or if the view height is fixed.</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> ((mLayoutParams.width != LayoutParams.WRAP_CONTENT ||</div><div class="line">                (mMaxWidthMode == mMinWidthMode &amp;&amp; mMaxWidth == mMinWidth)) &amp;&amp;</div><div class="line">                (mHint == <span class="keyword">null</span> || mHintLayout != <span class="keyword">null</span>) &amp;&amp;</div><div class="line">                (mRight - mLeft - getCompoundPaddingLeft() - getCompoundPaddingRight() &gt; <span class="number">0</span>)) &#123;</div><div class="line">            <span class="comment">// Static width, so try making a new text layout.</span></div><div class="line"></div><div class="line">            <span class="keyword">int</span> oldht = mLayout.getHeight();</div><div class="line">            <span class="keyword">int</span> want = mLayout.getWidth();</div><div class="line">            <span class="keyword">int</span> hintWant = mHintLayout == <span class="keyword">null</span> ? <span class="number">0</span> : mHintLayout.getWidth();</div><div class="line"></div><div class="line">            <span class="comment">/*</span></div><div class="line">             * No need to bring the text into view, since the size is not</div><div class="line">             * changing (unless we do the requestLayout(), in which case it</div><div class="line">             * will happen at measure).</div><div class="line">             */</div><div class="line">            makeNewLayout(want, hintWant, UNKNOWN_BORING, UNKNOWN_BORING,</div><div class="line">                          mRight - mLeft - getCompoundPaddingLeft() - getCompoundPaddingRight(),</div><div class="line">                          <span class="keyword">false</span>);</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (mEllipsize != TextUtils.TruncateAt.MARQUEE) &#123;</div><div class="line">                <span class="comment">// In a fixed-height view, so use our new text layout.</span></div><div class="line">                <span class="keyword">if</span> (mLayoutParams.height != LayoutParams.WRAP_CONTENT &amp;&amp;</div><div class="line">                    mLayoutParams.height != LayoutParams.MATCH_PARENT) &#123;</div><div class="line">                    invalidate();</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="comment">// Dynamic height, but height has stayed the same,</span></div><div class="line">                <span class="comment">// so use our new text layout.</span></div><div class="line">                <span class="keyword">if</span> (mLayout.getHeight() == oldht &amp;&amp;</div><div class="line">                    (mHintLayout == <span class="keyword">null</span> || mHintLayout.getHeight() == oldht)) &#123;</div><div class="line">                    invalidate();</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// We lose: the height has changed and we have a dynamic height.</span></div><div class="line">            <span class="comment">// Request a new view layout using our new text layout.</span></div><div class="line">            requestLayout();</div><div class="line">            invalidate();</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Dynamic width, so we have no choice but to request a new</span></div><div class="line">            <span class="comment">// view layout with a new text layout.</span></div><div class="line">            nullLayouts();</div><div class="line">            requestLayout();</div><div class="line">            invalidate();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>同理,我一步一步跟进代码会走到下面的方法中(在浏览代码时我们要注意我们的目的是什么,我们是在找在哪里去判断是否在主线程中),请关注<code>p.invalidateChild(this, damage);</code>这句代码,p是一个ViewParent,熟悉View绘制流程的小伙伴看到ViewParent就会恍然大悟,著名的ViewRootImpl就是ViewParent的子类,所以我们直接去ViewRootImpl中搜寻invalidateChild方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">invalidateInternal</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b, <span class="keyword">boolean</span> invalidateCache,</span></span></div><div class="line">           <span class="keyword">boolean</span> fullInvalidate) &#123;</div><div class="line">       <span class="keyword">if</span> (mGhostView != <span class="keyword">null</span>) &#123;</div><div class="line">           mGhostView.invalidate(<span class="keyword">true</span>);</div><div class="line">           <span class="keyword">return</span>;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (skipInvalidate()) &#123;</div><div class="line">           <span class="keyword">return</span>;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="keyword">if</span> ((mPrivateFlags &amp; (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)) == (PFLAG_DRAWN | PFLAG_HAS_BOUNDS)</div><div class="line">               || (invalidateCache &amp;&amp; (mPrivateFlags &amp; PFLAG_DRAWING_CACHE_VALID) == PFLAG_DRAWING_CACHE_VALID)</div><div class="line">               || (mPrivateFlags &amp; PFLAG_INVALIDATED) != PFLAG_INVALIDATED</div><div class="line">               || (fullInvalidate &amp;&amp; isOpaque() != mLastIsOpaque)) &#123;</div><div class="line">           <span class="keyword">if</span> (fullInvalidate) &#123;</div><div class="line">               mLastIsOpaque = isOpaque();</div><div class="line">               mPrivateFlags &amp;= ~PFLAG_DRAWN;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           mPrivateFlags |= PFLAG_DIRTY;</div><div class="line"></div><div class="line">           <span class="keyword">if</span> (invalidateCache) &#123;</div><div class="line">               mPrivateFlags |= PFLAG_INVALIDATED;</div><div class="line">               mPrivateFlags &amp;= ~PFLAG_DRAWING_CACHE_VALID;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="comment">// Propagate the damage rectangle to the parent view.</span></div><div class="line">           <span class="keyword">final</span> AttachInfo ai = mAttachInfo;</div><div class="line">           <span class="keyword">final</span> ViewParent p = mParent;</div><div class="line">           <span class="keyword">if</span> (p != <span class="keyword">null</span> &amp;&amp; ai != <span class="keyword">null</span> &amp;&amp; l &lt; r &amp;&amp; t &lt; b) &#123;</div><div class="line">               <span class="keyword">final</span> Rect damage = ai.mTmpInvalRect;</div><div class="line">               damage.set(l, t, r, b);</div><div class="line">               p.invalidateChild(<span class="keyword">this</span>, damage);</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="comment">// Damage the entire projection receiver, if necessary.</span></div><div class="line">           <span class="keyword">if</span> (mBackground != <span class="keyword">null</span> &amp;&amp; mBackground.isProjected()) &#123;</div><div class="line">               <span class="keyword">final</span> View receiver = getProjectionReceiver();</div><div class="line">               <span class="keyword">if</span> (receiver != <span class="keyword">null</span>) &#123;</div><div class="line">                   receiver.damageInParent();</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="comment">// Damage the entire IsolatedZVolume receiving this view's shadow.</span></div><div class="line">           <span class="keyword">if</span> (isHardwareAccelerated() &amp;&amp; getZ() != <span class="number">0</span>) &#123;</div><div class="line">               damageShadowReceiver();</div><div class="line">           &#125;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>在ViewRootImpl中invalidateChild方法调用了以下这个方法,值得高兴的是,我们终于找到了,请关注函数中第一句代码<code>checkThread()</code>,点进去看这个函数的实现后发现他做的事是我们再熟悉不过的了,熟悉的代码熟悉的报错信息,到此一切都真相大白了,检查当前线程是否是主线程的逻辑在ViewRootImpl方法中,熟悉View绘制流程的小伙伴肯定知道ViewRootImpl是在onResume方法中去创建的,所以说,只要在onResume方法调用之前,都是可以在子线程中更新UI的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"> <span class="function"><span class="keyword">public</span> ViewParent <span class="title">invalidateChildInParent</span><span class="params">(<span class="keyword">int</span>[] location, Rect dirty)</span> </span>&#123;</div><div class="line">     checkThread();</div><div class="line">     <span class="keyword">if</span> (DEBUG_DRAW) Log.v(TAG, <span class="string">"Invalidate child: "</span> + dirty);</div><div class="line"></div><div class="line">     <span class="keyword">if</span> (dirty == <span class="keyword">null</span>) &#123;</div><div class="line">         invalidate();</div><div class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">     &#125; <span class="keyword">else</span> <span class="keyword">if</span> (dirty.isEmpty() &amp;&amp; !mIsAnimating) &#123;</div><div class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="keyword">if</span> (mCurScrollY != <span class="number">0</span> || mTranslator != <span class="keyword">null</span>) &#123;</div><div class="line">         mTempRect.set(dirty);</div><div class="line">         dirty = mTempRect;</div><div class="line">         <span class="keyword">if</span> (mCurScrollY != <span class="number">0</span>) &#123;</div><div class="line">             dirty.offset(<span class="number">0</span>, -mCurScrollY);</div><div class="line">         &#125;</div><div class="line">         <span class="keyword">if</span> (mTranslator != <span class="keyword">null</span>) &#123;</div><div class="line">             mTranslator.translateRectInAppWindowToScreen(dirty);</div><div class="line">         &#125;</div><div class="line">         <span class="keyword">if</span> (mAttachInfo.mScalingRequired) &#123;</div><div class="line">             dirty.inset(-<span class="number">1</span>, -<span class="number">1</span>);</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     invalidateRectOnScreen(dirty);</div><div class="line"></div><div class="line">     <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">checkThread</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mThread != Thread.currentThread()) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> CalledFromWrongThreadException(</div><div class="line">                <span class="string">"Only the original thread that created a view hierarchy can touch its views."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>这次的探查过程给了我很大的启示,遇见问题时,在必要时首先要回忆之前遇到的相似问题,并合理利用网上搜索的信息去自己探索问题的真相,一个根据关键信息推导出来的合理假设将使我们事半功倍,并且注意不要盲目的相信网上的一些结论,纸上得来终觉浅,绝知此事要躬行!</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/08/21/引入多线程的代价/" itemprop="url">
                   引入多线程的代价
                 </a>
@@ -553,7 +687,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
